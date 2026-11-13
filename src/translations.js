@@ -5,9 +5,11 @@ export const translations = {
     skippedCount: "Duplicati non importati",
     updatedCount: "Contatti aggiornati",
     importedCount: "Nuovi contatti importati",
-    updateWarning: "Sostituisce i campi dei contatti corrispondenti, anche con valori vuoti. Conserva identificativo e preferiti. Le corrispondenze ambigue e le righe ripetute restano escluse.",
+    updateWarning:
+      "Sostituisce i campi dei contatti corrispondenti, anche con valori vuoti. Conserva identificativo e preferiti. Le corrispondenze ambigue e le righe ripetute restano escluse.",
     updateDuplicates: "Aggiorna i contatti già presenti",
-    duplicateSkipped: "Duplicato nel CSV o corrispondenza ambigua: riga esclusa.",
+    duplicateSkipped:
+      "Duplicato nel CSV o corrispondenza ambigua: riga esclusa.",
     duplicateUpdatable: "Contatto già presente; aggiornabile su richiesta.",
     row: "Riga",
     skippedDetails: "Dettaglio delle righe escluse",
@@ -53,7 +55,7 @@ export const translations = {
     contact: "Contatto personale",
     noEmail: "Email non inserita",
     invalidPhone:
-      "Inserisci un telefono con 10–15 cifre totali, incluso l'eventuale prefisso internazionale. Sono ammessi + iniziale, spazi, parentesi e trattini.",
+      "Inserisci un telefono con 7–15 cifre totali, incluso l'eventuale prefisso internazionale. Sono ammessi + iniziale, spazi, parentesi e trattini.",
     noCity: "Città non inserita",
     noNotes: "Nessuna nota",
     editTitle: "Modifica contatto",
@@ -102,9 +104,11 @@ export const translations = {
     skippedCount: "Duplicates not imported",
     updatedCount: "Contacts updated",
     importedCount: "New contacts imported",
-    updateWarning: "Replaces matching contact fields, including empty values. Keeps IDs and favorites. Ambiguous matches and repeated rows remain excluded.",
+    updateWarning:
+      "Replaces matching contact fields, including empty values. Keeps IDs and favorites. Ambiguous matches and repeated rows remain excluded.",
     updateDuplicates: "Update existing contacts",
-    duplicateSkipped: "Duplicate within the CSV or ambiguous match: row excluded.",
+    duplicateSkipped:
+      "Duplicate within the CSV or ambiguous match: row excluded.",
     duplicateUpdatable: "Existing contact; can be updated on request.",
     row: "Row",
     skippedDetails: "Excluded row details",
@@ -150,7 +154,7 @@ export const translations = {
     contact: "Personal contact",
     noEmail: "No email address",
     invalidPhone:
-      "Enter a phone number with 10–15 total digits, including any international prefix. A leading +, spaces, parentheses and hyphens are allowed.",
+      "Enter a phone number with 7–15 total digits, including any international prefix. A leading +, spaces, parentheses and hyphens are allowed.",
     noCity: "City not provided",
     noNotes: "No notes",
     editTitle: "Edit contact",

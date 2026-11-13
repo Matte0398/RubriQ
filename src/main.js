@@ -115,7 +115,7 @@ function commit(contacts, message = "") {
 function render() {
   document.documentElement.dataset.theme = state.theme;
   document.documentElement.lang = state.language;
-  document.title = `AgendApp · ${t("directory")}`;
+  document.title = `RubriQ · ${t("directory")}`;
   const contacts = filterContacts(state.contacts, {
     query: state.query,
     country: state.country,
@@ -164,9 +164,9 @@ function dialogMarkup() {
             ? t("importTitle")
             : dialog.type === "import-result"
               ? t("imported")
-            : dialog.type === "duplicate"
-              ? t("duplicateTitle")
-              : t("help");
+              : dialog.type === "duplicate"
+                ? t("duplicateTitle")
+                : t("help");
   let content = "";
 
   if (dialog.type === "form") {
@@ -183,7 +183,16 @@ function dialogMarkup() {
       "address",
       "streetNumber",
     ];
-    content = `<form id="contact-form" novalidate>${dialog.errors ? `<div class="warning" role="alert"><ul>${Object.entries(dialog.errors).map(([key, reason]) => `<li>${escapeHtml(fieldLabels[key][state.language === "en" ? 1 : 0])}: ${escapeHtml(t(reason))}</li>`).join("")}</ul></div>` : ""}<p class="hint">${t("required")}</p><div class="form-grid">${formFields.map((key) => `<label>${fieldLabels[key][state.language === "en" ? 1 : 0]}${["firstName", "lastName"].includes(key) ? " *" : ""}<input name="${key}" type="${key === "email" ? "email" : key === "phone" ? "tel" : "text"}" maxlength="254" ${["firstName", "lastName"].includes(key) ? "required" : ""} value="${escapeHtml(current[key])}"/></label>`).join("")}<label class="wide">${fieldLabels.notes[state.language === "en" ? 1 : 0]}<textarea name="notes" rows="3" maxlength="2000">${escapeHtml(current.notes)}</textarea></label><label class="wide check-label"><input name="favorite" type="checkbox" ${current.favorite ? "checked" : ""}/> ${t("addFavorite")}</label></div><div class="modal-footer"><button type="button" class="btn secondary" data-action="close">${t("cancel")}</button><button type="submit" class="btn primary">${contact?.id ? t("save") : t("create")}</button></div></form>`;
+    content = `<form id="contact-form" novalidate>${
+      dialog.errors
+        ? `<div class="warning" role="alert"><ul>${Object.entries(dialog.errors)
+            .map(
+              ([key, reason]) =>
+                `<li>${escapeHtml(fieldLabels[key][state.language === "en" ? 1 : 0])}: ${escapeHtml(t(reason))}</li>`,
+            )
+            .join("")}</ul></div>`
+        : ""
+    }<p class="hint">${t("required")}</p><div class="form-grid">${formFields.map((key) => `<label>${fieldLabels[key][state.language === "en" ? 1 : 0]}${["firstName", "lastName", "phone"].includes(key) ? " *" : ""}<input name="${key}" type="${key === "email" ? "email" : key === "phone" ? "tel" : "text"}" maxlength="254" ${["firstName", "lastName", "phone"].includes(key) ? "required" : ""} value="${escapeHtml(current[key])}"/></label>`).join("")}<label class="wide">${fieldLabels.notes[state.language === "en" ? 1 : 0]}<textarea name="notes" rows="3" maxlength="2000">${escapeHtml(current.notes)}</textarea></label><label class="wide check-label"><input name="favorite" type="checkbox" ${current.favorite ? "checked" : ""}/> ${t("addFavorite")}</label></div><div class="modal-footer"><button type="button" class="btn secondary" data-action="close">${t("cancel")}</button><button type="submit" class="btn primary">${contact?.id ? t("save") : t("create")}</button></div></form>`;
   } else if (dialog.type === "detail") {
     content = `<div class="detail"><div class="detail-name"><span class="avatar large">${escapeHtml(contact.firstName[0] + contact.lastName[0])}</span><h3>${escapeHtml(contact.firstName)} ${escapeHtml(contact.lastName)}</h3><p>${escapeHtml([contact.city, contact.country].filter(Boolean).join(", "))}</p></div><dl>${["email", "phone", "address", "streetNumber", "postalCode", "city", "region", "country", "notes"].map((key) => `<div><dt>${fieldLabels[key][state.language === "en" ? 1 : 0]}</dt><dd>${escapeHtml(contact[key]) || "—"}</dd></div>`).join("")}</dl></div><div class="modal-footer">${button("close", t("close"))}${button("edit", t("edit"), "primary", `data-id="${escapeHtml(contact.id)}"`)}</div>`;
   } else if (dialog.type === "delete") {
@@ -193,8 +202,23 @@ function dialogMarkup() {
   } else if (dialog.type === "import") {
     const plan = dialog.plan;
     const skippedRows = [
-      ...plan.duplicates.map((item) => ({ ...item, reason: item.canUpdate ? t("duplicateUpdatable") : t("duplicateSkipped") })),
-      ...plan.invalid.map((item) => ({ ...item, reason: Object.entries(item.errors).map(([key, reason]) => fieldLabels[key][state.language === "en" ? 1 : 0] + ": " + t(reason)).join("; ") })),
+      ...plan.duplicates.map((item) => ({
+        ...item,
+        reason: item.canUpdate
+          ? t("duplicateUpdatable")
+          : t("duplicateSkipped"),
+      })),
+      ...plan.invalid.map((item) => ({
+        ...item,
+        reason: Object.entries(item.errors)
+          .map(
+            ([key, reason]) =>
+              fieldLabels[key][state.language === "en" ? 1 : 0] +
+              ": " +
+              t(reason),
+          )
+          .join("; "),
+      })),
     ].sort((left, right) => left.row - right.row);
     content = `<div class="modal-copy"><p><strong>${t("importReady")}:</strong> ${plan.accepted.length}</p><p><strong>${t("importDuplicates")}:</strong> ${plan.duplicates.length}</p><p><strong>${t("invalidRows")}:</strong> ${plan.invalid.length}</p>${skippedRows.length ? `<details><summary>${t("skippedDetails")}</summary><ul>${skippedRows.map((item) => `<li>${t("row")} ${item.row}: ${escapeHtml(item.contact.firstName)} ${escapeHtml(item.contact.lastName)} — ${escapeHtml(item.reason)}</li>`).join("")}</ul></details>` : ""}${plan.updates.length ? `<label class="check-label"><input id="update-duplicates" type="checkbox"/> ${t("updateDuplicates")} (${plan.updates.length})</label><p>${t("updateWarning")}</p>` : ""}${!plan.accepted.length ? `<p>${t("importNone")}</p>` : ""}</div><div class="modal-footer">${button("close", t("cancel"))}${button("import-confirm", t("importConfirm"), "primary")}</div>`;
   } else if (dialog.type === "import-result") {
@@ -302,8 +326,13 @@ app.addEventListener("click", (event) => {
     app.querySelector("#csv-file").click();
     return;
   } else if (action === "import-confirm") {
-    const shouldUpdate = app.querySelector("#update-duplicates")?.checked || false;
-    const outcome = applyImport(state.dialog.incoming, state.contacts, shouldUpdate);
+    const shouldUpdate =
+      app.querySelector("#update-duplicates")?.checked || false;
+    const outcome = applyImport(
+      state.dialog.incoming,
+      state.contacts,
+      shouldUpdate,
+    );
     if (outcome.imported || outcome.updated) commit(outcome.contacts);
 
     state.dialog = { type: "import-result", outcome };
@@ -372,7 +401,9 @@ app.addEventListener("change", async (event) => {
     }
 
     try {
-      const text = new TextDecoder("utf-8", { fatal: true }).decode(await file.arrayBuffer());
+      const text = new TextDecoder("utf-8", { fatal: true }).decode(
+        await file.arrayBuffer(),
+      );
       const incoming = parseCsv(text);
       state.dialog = {
         type: "import",

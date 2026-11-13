@@ -1,4 +1,4 @@
-# AgendApp
+# RubriQ
 
 A responsive personal address book built with JavaScript, CSS and Vite. Manage contacts, search your directory and create CSV backups. The interface supports English and Italian, with dark mode enabled by default.
 
@@ -21,7 +21,7 @@ A responsive personal address book built with JavaScript, CSS and Vite. Manage c
 ## Repository Structure
 
 ```text
-AgendApp/
+RubriQ/
 |-- docs/screenshots/
 |   |-- contacts-desktop.png
 |   |-- contact-validation.png
@@ -117,10 +117,10 @@ Select **New contact** to add a contact. Use the row actions to edit, delete or 
 
 ## Contact validation
 
-First and last names are required. Email and phone are optional, but filled fields must pass the same checks when creating, editing or importing contacts:
+First name, last name and phone are required. Email is optional. The same validation rules apply when creating, editing or importing contacts:
 
 - **Email:** a valid email format.
-- **Phone:** 10–15 total digits, including any international prefix, with an optional leading `+`, spaces, parentheses and hyphens. Formatting characters do not count toward the digit total.
+- **Phone:** 7–15 total digits, including any international prefix, with an optional leading `+`, spaces, parentheses and hyphens. Formatting characters do not count toward the digit total.
 - **Field length:** up to 254 characters for regular fields and 2,000 for notes.
 
 Errors appear inside the contact form without clearing the entered values. These checks validate formatting, not whether an email address or phone number exists.
@@ -134,6 +134,8 @@ Manual entry detects possible duplicates by email, normalized phone number or fi
 Select **Import CSV** and choose a UTF-8 `.csv` file up to 5 MB, using `;` or `,` as its separator. Start with the [sample exported CSV](examples/agenda-2026-10-12.csv) to see the supported format.
 
 Headers must match the English or Italian export field names. First and last name columns are required; other supported columns are optional. Unknown or repeated columns, malformed quoting, inconsistent column counts and invalid UTF-8 cause the entire file to be rejected. Files without a `.csv` extension are also rejected.
+
+Contacts with a missing or empty phone field are marked as invalid and excluded from import.
 
 The preview shows new contacts, duplicates and invalid rows. Expand the excluded-row details to see the row numbers and reasons. Invalid contacts are skipped while valid new contacts can still be imported.
 

@@ -211,11 +211,11 @@ export function parseCsv(text) {
       value = "";
       hasClosedQuote = false;
     } else {
-      if (hasClosedQuote) throw new Error("Unexpected text after closing quote");
+      if (hasClosedQuote)
+        throw new Error("Unexpected text after closing quote");
 
       value += character;
     }
-
   }
 
   if (quoted) throw new Error("Unclosed CSV quote");
@@ -236,7 +236,10 @@ export function parseCsv(text) {
   if (!positions.includes("firstName") || !positions.includes("lastName"))
     throw new Error("Missing name columns");
 
-  if (positions.some((key) => !key) || new Set(positions).size !== positions.length) {
+  if (
+    positions.some((key) => !key) ||
+    new Set(positions).size !== positions.length
+  ) {
     throw new Error("Unknown or duplicate columns");
   }
 
@@ -271,7 +274,7 @@ export function duplicateOf(contact, contacts) {
 
 export function validateContact(contact) {
   const errors = {};
-  for (const key of ["firstName", "lastName"]) {
+  for (const key of ["firstName", "lastName", "phone"]) {
     if (!String(contact[key] || "").trim()) errors[key] = "missingField";
   }
 
@@ -279,23 +282,29 @@ export function validateContact(contact) {
     if (String(contact[key] || "").length > (key === "notes" ? 2000 : 254)) {
       errors[key] = "tooLong";
     }
-
   }
 
   const email = String(contact.email || "").trim();
-  if (email && !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/.test(email)) {
+  if (
+    email &&
+    !/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*$/.test(
+      email,
+    )
+  ) {
     errors.email = "invalidEmail";
   }
 
   const phone = String(contact.phone || "").trim();
   const digitCount = phone.replace(/\D/g, "").length;
-  if (phone && (!/^\+?[0-9 ()-]+$/.test(phone) || digitCount < 10 || digitCount > 15)) {
+  if (
+    phone &&
+    (!/^\+?[0-9 ()-]+$/.test(phone) || digitCount < 7 || digitCount > 15)
+  ) {
     errors.phone = "invalidPhone";
   }
 
   return errors;
 }
-
 
 export function planImport(incoming, existing) {
   const accepted = [],
@@ -311,32 +320,52 @@ export function planImport(incoming, existing) {
       continue;
     }
 
-    const matches = existing.filter((existingContact) => duplicateOf(contact, [existingContact]));
+    const matches = existing.filter((existingContact) =>
+      duplicateOf(contact, [existingContact]),
+    );
     const match = matches[0] || duplicateOf(contact, accepted);
 
     if (match) {
-      const canUpdate = matches.length === 1 && !updates.some((item) => item.match.id === match.id);
+      const canUpdate =
+        matches.length === 1 &&
+        !updates.some((item) => item.match.id === match.id);
       const duplicate = { contact, match, row, canUpdate };
       duplicates.push(duplicate);
       if (canUpdate) updates.push(duplicate);
     } else {
       accepted.push(contact);
     }
-
   }
 
   return { accepted, duplicates, invalid, updates };
 }
-
 
 export function applyImport(incoming, existing, shouldUpdate = false) {
   const plan = planImport(incoming, existing);
   const updates = shouldUpdate ? plan.updates : [];
   const contacts = existing.map((contact) => {
     const update = updates.find((item) => item.match.id === contact.id);
-    return update ? { ...contact, ...update.contact, id: contact.id, favorite: contact.favorite } : contact;
+    return update
+      ? {
+          ...contact,
+          ...update.contact,
+          id: contact.id,
+          favorite: contact.favorite,
+        }
+      : contact;
   });
-  contacts.push(...plan.accepted.map((contact) => ({ ...contact, id: crypto.randomUUID() })));
+  contacts.push(
+    ...plan.accepted.map((contact) => ({
+      ...contact,
+      id: crypto.randomUUID(),
+    })),
+  );
 
-  return { contacts, imported: plan.accepted.length, updated: updates.length, skipped: plan.duplicates.length - updates.length, invalid: plan.invalid.length };
+  return {
+    contacts,
+    imported: plan.accepted.length,
+    updated: updates.length,
+    skipped: plan.duplicates.length - updates.length,
+    invalid: plan.invalid.length,
+  };
 }
