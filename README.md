@@ -22,21 +22,24 @@ A responsive personal address book built with JavaScript, CSS and Vite. Manage c
 
 ```text
 RubriQ/
-|-- docs/screenshots/
-|   |-- contacts-desktop.png
-|   |-- contact-validation.png
-|   |-- csv-import-preview.png
-|   |-- csv-import-result.png
-|   `-- contacts-mobile.png
+|-- docs/
+|   `-- screenshots/
+|       |-- contact-view.png
+|       |-- contact-validation.png
+|       |-- csv-import-preview.png
+|       |-- csv-import-result.png
+|       `-- contact-mobile.png
 |-- examples/
 |   `-- agenda-2026-10-12.csv
-|-- public/favicon.svg
+|-- public/
+|   `-- favicon.svg
 |-- src/
 |   |-- contacts.js
 |   |-- translations.js
 |   |-- main.js
 |   `-- styles.css
-|-- tests/contacts.test.js
+|-- tests/
+|   `-- contacts.test.js
 |-- .gitignore
 |-- index.html
 |-- LICENSE
